@@ -1,0 +1,9 @@
+[Unit]
+Description=TLS Redirector (http to https)
+After=tls-redirector.socket
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/tls-redirector
+Restart=on-failure
+User=nobody
