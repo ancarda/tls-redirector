@@ -3,12 +3,20 @@
 package main
 
 import (
+	"flag"
+	"io/ioutil"
 	"log"
 	"net"
 	"net/http"
+	"os"
+	"strings"
 
 	"github.com/coreos/go-systemd/activation"
 )
+
+const acmeChallengeUrlPrefix = "/.well-known/acme-challenge/"
+
+var acmeChallengeDir string
 
 func isIPAddress(host string) bool {
 	if net.ParseIP(host) != nil {
@@ -25,7 +33,7 @@ func isIPAddress(host string) bool {
 }
 
 func handle(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Server", "tls-redirector/1.0")
+	w.Header().Set("Server", "tls-redirector/1.1")
 
 	// If we haven't been given a host, just abort.
 	if r.Host == "" {
@@ -43,6 +51,24 @@ func handle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// If we are serving the ACME HTTP challenges, handle that here.
+	if acmeChallengeDir != "" {
+		if strings.HasPrefix(r.URL.Path, acmeChallengeUrlPrefix) {
+			id := strings.TrimPrefix(r.URL.Path, acmeChallengeUrlPrefix)
+			if _, err := os.Stat(acmeChallengeDir + "/" + id); err == nil {
+				w.Header().Set("Content-Type", "text/plain")
+				b, err := ioutil.ReadFile(acmeChallengeDir + "/" + id)
+				if err != nil {
+					http.Error(w, "File Not Found", http.StatusNotFound)
+					return
+				}
+
+				w.Write(b)
+				return
+			}
+		}
+	}
+
 	// Overwrite the scheme to https:// and redirect.
 	// Change host as well as in r.URL, it's empty.
 	r.URL.Host = r.Host
@@ -51,6 +77,15 @@ func handle(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	flag.StringVar(&acmeChallengeDir, "acme", "", "Location to serve ACME HTTP challenges from")
+	flag.Parse()
+
+	if acmeChallengeDir != "" {
+		if _, err := os.Stat(acmeChallengeDir); os.IsNotExist(err) {
+			log.Fatal("fatal: ACME HTTP challenge directory not found: " + acmeChallengeDir)
+		}
+	}
+
 	http.HandleFunc("/", handle)
 
 	listeners, err := activation.Listeners()

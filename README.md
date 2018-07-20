@@ -13,8 +13,9 @@ replaced with "https".
 ### Features
 
  * Can run as an unprivileged user by use of systemd activation sockets.
- * Requires no disk access, making sandboxing trivial.
+ * Possible to run without any disk access, making sandboxing trivial.
  * IP address traffic (usually by crawlers) is dropped.
+ * Can serve your .well-known/acme-challenge directory.
 
 ### Possible Caveats
 
