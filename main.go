@@ -6,7 +6,6 @@ import (
 	"flag"
 	"io/ioutil"
 	"log"
-	"net"
 	"net/http"
 	"os"
 	"strings"
@@ -17,20 +16,6 @@ import (
 const acmeChallengeUrlPrefix = "/.well-known/acme-challenge/"
 
 var acmeChallengeDir string
-
-func isIPAddress(host string) bool {
-	if net.ParseIP(host) != nil {
-		return true
-	}
-
-	if host, _, err := net.SplitHostPort(host); err == nil {
-		if net.ParseIP(host) != nil {
-			return true
-		}
-	}
-
-	return false
-}
 
 func handle(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Server", "tls-redirector/1.1")
