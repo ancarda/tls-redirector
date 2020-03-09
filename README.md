@@ -2,7 +2,7 @@
 
 _A tiny service for port 80 that rewrites URLs to HTTPS_
 
-[![License](https://img.shields.io/github/license/ancarda/tls-redirector.svg)](https://choosealicense.com/licenses/mit/)
+[![License](https://img.shields.io/github/license/ancarda/tls-redirector.svg)](https://choosealicense.com/licenses/agpl-3.0/)
 [![Build Status](https://travis-ci.org/ancarda/tls-redirector.svg?branch=master)](https://travis-ci.org/ancarda/tls-redirector)
 [![Go Report Card](https://goreportcard.com/badge/github.com/ancarda/tls-redirector)](https://goreportcard.com/report/github.com/ancarda/tls-redirector)
 
