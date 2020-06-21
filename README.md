@@ -33,10 +33,37 @@ up once and forget about it.
 * Can run as an unprivileged user by use of systemd activation sockets.
 * Possible to run without any disk access, making sandboxing trivial.
 * IP address traffic (usually by crawlers) is dropped.
-* Can serve your .well-known/acme-challenge directory.
+* Can serve your `.well-known/acme-challenge` directory.
 
 ## Possible Caveats
 
-* The host field is required to redirect (there's no way to configure a
-  default), and visitors without one will simply see an error message.
-* Must be running on a Linux distribution with systemd for now.
+* The `Host` header is required to redirect - there's no way to configure a
+  default - and visitors without one will simply see an error message.
+
+* Only a single ACME challenge directory can be served, as the `Host` header
+  is ignored, so if you have multiple domains or servers on the same machine,
+  you may want to:
+    * Consider using DNS based ACME challenges.
+    * Store all your HTTP based ACME challenges in the same directory.
+
+## Configuration
+
+Behavior may be configured through the following environmental variables:
+
+* `PORT` (required). Either a valid TCP/IP port number, or `systemd` to use
+  systemd socket activation.
+
+* `ACME_CHALLENGE_DIR` (optional) Path to a directory on disk to serve at the
+  path `/.well-known/acme-challenge`. All files are served as `text/plain` and
+  is intended to provide support for HTTP based ACME challenges if necessary.
+
+  Setting this to `/tmp` means tls-redirector will look for files in that
+  directory. This differs slightly from the `--webroot` command of EFF certbot
+  because certbot expects to be at the root, and tls-redirector does not.
+  Therefore, when you setup certbot, if you have the following:
+
+  `certbot --webroot /var/www`
+
+  You should set TLS Redirector to:
+
+  `ACME_CHALLENGE_DIR=/var/www/.well-known/acme-challenge`
