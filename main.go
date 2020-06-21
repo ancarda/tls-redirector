@@ -34,7 +34,8 @@ func handle(w http.ResponseWriter, r *http.Request) {
 	// to be junk traffic (scanning bots). We can save the
 	// real web server some effort by dropping it now.
 	if isIPAddress(r.Host) {
-		http.Error(w, "tls-redirector cannot redirect IP addresses.", http.StatusBadRequest)
+		http.Error(w, "tls-redirector cannot redirect IP addresses.",
+			http.StatusBadRequest)
 		return
 	}
 
@@ -62,11 +63,11 @@ func handle(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	acmeChallengeDir = os.Getenv("ACME_CHALLENGE_DIR");
-
+	acmeChallengeDir = os.Getenv("ACME_CHALLENGE_DIR")
 	if acmeChallengeDir != "" {
 		if _, err := os.Stat(acmeChallengeDir); os.IsNotExist(err) {
-			log.Fatal("fatal: ACME HTTP challenge directory not found: " + acmeChallengeDir)
+			log.Fatalf("fatal: ACME HTTP challenge directory not found: %s",
+				acmeChallengeDir)
 		}
 	}
 
@@ -82,7 +83,6 @@ func main() {
 		if err != nil {
 			log.Fatalf("cannot retrieve listeners: %s", err)
 		}
-
 		if len(listeners) != 1 {
 			log.Fatalf("unexpected number of socket activation (%d != 1)",
 				len(listeners))
