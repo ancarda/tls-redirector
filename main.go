@@ -39,17 +39,15 @@ func handle(w http.ResponseWriter, r *http.Request) {
 	if acmeChallengeDir != "" {
 		if strings.HasPrefix(r.URL.Path, acmeChallengeUrlPrefix) {
 			id := strings.TrimPrefix(r.URL.Path, acmeChallengeUrlPrefix)
-			if _, err := os.Stat(acmeChallengeDir + "/" + id); err == nil {
-				w.Header().Set("Content-Type", "text/plain")
-				b, err := ioutil.ReadFile(acmeChallengeDir + "/" + id)
-				if err != nil {
-					http.Error(w, "File Not Found", http.StatusNotFound)
-					return
-				}
-
-				w.Write(b)
+			w.Header().Set("Content-Type", "text/plain")
+			b, err := ioutil.ReadFile(acmeChallengeDir + "/" + id)
+			if err != nil {
+				http.Error(w, "File Not Found", http.StatusNotFound)
 				return
 			}
+
+			w.Write(b)
+			return
 		}
 	}
 
