@@ -3,6 +3,7 @@ Description=TLS Redirector (http to https)
 After=tls-redirector.socket
 
 [Service]
+#Environment=ACME_CHALLENGE_DIR=/tmp
 Type=simple
 ExecStart=/usr/bin/tls-redirector
 Restart=on-failure

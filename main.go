@@ -3,7 +3,6 @@
 package main
 
 import (
-	"flag"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -62,8 +61,7 @@ func handle(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	flag.StringVar(&acmeChallengeDir, "acme", "", "Location to serve ACME HTTP challenges from")
-	flag.Parse()
+	acmeChallengeDir = os.Getenv("ACME_CHALLENGE_DIR");
 
 	if acmeChallengeDir != "" {
 		if _, err := os.Stat(acmeChallengeDir); os.IsNotExist(err) {
