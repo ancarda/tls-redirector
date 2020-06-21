@@ -20,7 +20,7 @@ const noPortNumberHelperText = `Environmental Variable 'PORT' wasn't specified.
 var acmeChallengeDir string
 
 func handle(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Server", "tls-redirector/1.1")
+	w.Header().Set("Server", "tls-redirector/2.0")
 
 	// If we haven't been given a host, just abort.
 	if r.Host == "" {
