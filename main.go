@@ -14,6 +14,9 @@ import (
 
 const acmeChallengeUrlPrefix = "/.well-known/acme-challenge/"
 
+const noPortNumberHelperText = `Environmental Variable 'PORT' wasn't specified.
+  => Set this to a port number OR 'systemd' to use systemd socket activation.`
+
 var acmeChallengeDir string
 
 func handle(w http.ResponseWriter, r *http.Request) {
@@ -69,15 +72,24 @@ func main() {
 
 	http.HandleFunc("/", handle)
 
-	listeners, err := activation.Listeners()
-	log.Println(listeners)
-	if err != nil {
-		log.Panicf("cannot retrieve listeners: %s", err)
+	port := os.Getenv("PORT")
+	if port == "" {
+		log.Fatalf("fatal: %s", noPortNumberHelperText)
 	}
 
-	if len(listeners) != 1 {
-		log.Panicf("unexpected number of socket activation (%d != 1)", len(listeners))
+	if port == "systemd" {
+		listeners, err := activation.Listeners()
+		if err != nil {
+			log.Fatalf("cannot retrieve listeners: %s", err)
+		}
+
+		if len(listeners) != 1 {
+			log.Fatalf("unexpected number of socket activation (%d != 1)",
+				len(listeners))
+		}
+
+		log.Fatal(http.Serve(listeners[0], nil))
 	}
 
-	log.Fatal(http.Serve(listeners[0], nil))
+	log.Fatal(http.ListenAndServe(":"+port, nil))
 }
