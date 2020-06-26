@@ -8,19 +8,23 @@ import (
 	"net/http"
 	"os"
 	"strings"
-
-	"github.com/coreos/go-systemd/activation"
 )
 
-const acmeChallengeUrlPrefix = "/.well-known/acme-challenge/"
+const (
+	acmeChallengeUrlPrefix = "/.well-known/acme-challenge/"
 
-const noPortNumberHelperText = `Environmental Variable 'PORT' wasn't specified.
-  => Set this to a port number OR 'systemd' to use systemd socket activation.`
+	noPortNumberHelperText = `Environmental Variable 'PORT' wasn't specified.
+  => Set this to a valid port number and try again.`
+
+	noPortNumberOrSockets = `No sockets given and no 'PORT' number.
+  => Launch with systemd socket activation OR
+  => Launch with PORT=xxx where xxx is a valid port number.`
+)
 
 var acmeChallengeDir string
 
 func handle(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Server", "tls-redirector/2.0")
+	w.Header().Set("Server", "tls-redirector/2.1")
 
 	// If we haven't been given a host, just abort.
 	if r.Host == "" {
@@ -74,21 +78,20 @@ func main() {
 	http.HandleFunc("/", handle)
 
 	port := os.Getenv("PORT")
-	if port == "" {
-		log.Fatalf("fatal: %s", noPortNumberHelperText)
+	if port == "systemd" {
+		log.Fatal(systemdServe())
 	}
 
-	if port == "systemd" {
-		listeners, err := activation.Listeners()
-		if err != nil {
-			log.Fatalf("cannot retrieve listeners: %s", err)
+	if port == "" {
+		if systemdEnabled() {
+			if systemdCanServe() {
+				log.Fatal(systemdServe())
+			} else {
+				log.Fatal(noPortNumberOrSockets)
+			}
+		} else {
+			log.Fatal(noPortNumberHelperText)
 		}
-		if len(listeners) != 1 {
-			log.Fatalf("unexpected number of socket activation (%d != 1)",
-				len(listeners))
-		}
-
-		log.Fatal(http.Serve(listeners[0], nil))
 	}
 
 	log.Fatal(http.ListenAndServe(":"+port, nil))

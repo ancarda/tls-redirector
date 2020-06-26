@@ -35,6 +35,14 @@ up once and forget about it.
 * IP address traffic (usually by crawlers) is dropped.
 * Can serve your `.well-known/acme-challenge` directory.
 
+## How To Build
+
+If you want systemd socket activation, you need to compile this way:
+
+    go build -tags systemd
+
+Building without that tag will produce a binary that only has TCP/IP support.
+
 ## Possible Caveats
 
 * The `Host` header is required to redirect - there's no way to configure a
@@ -50,8 +58,11 @@ up once and forget about it.
 
 Behavior may be configured through the following environmental variables:
 
-* `PORT` (required). Either a valid TCP/IP port number, or `systemd` to use
-  systemd socket activation.
+* `PORT`. A valid TCP/IP port number. This is required unless you build the
+  binary with support for systemd socket activation. In which case, `PORT` not
+  being set is interpreted as "I want to use socket activation".
+
+  You can force tls-redirector to use socket activation with `PORT=systemd`.
 
 * `ACME_CHALLENGE_DIR` (optional) Path to a directory on disk to serve at the
   path `/.well-known/acme-challenge`. All files are served as `text/plain` and
