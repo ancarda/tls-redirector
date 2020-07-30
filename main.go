@@ -8,7 +8,10 @@ import (
 	"os"
 )
 
-const acmeChallengeUrlPrefix = "/.well-known/acme-challenge/"
+const (
+	acmeChallengeUrlPrefix = "/.well-known/acme-challenge/"
+	version                = "2.1"
+)
 
 var acmeChallengeDir string
 

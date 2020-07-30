@@ -9,7 +9,7 @@ import (
 )
 
 func handle(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Server", "tls-redirector/2.1")
+	w.Header().Set("Server", "tls-redirector/"+version)
 
 	// If we haven't been given a host, just abort.
 	if r.Host == "" {
