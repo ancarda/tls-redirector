@@ -10,16 +10,7 @@ import (
 	"strings"
 )
 
-const (
-	acmeChallengeUrlPrefix = "/.well-known/acme-challenge/"
-
-	noPortNumberHelperText = `Environmental Variable 'PORT' wasn't specified.
-  => Set this to a valid port number and try again.`
-
-	noPortNumberOrSockets = `No sockets given and no 'PORT' number.
-  => Launch with systemd socket activation OR
-  => Launch with PORT=xxx where xxx is a valid port number.`
-)
+const acmeChallengeUrlPrefix = "/.well-known/acme-challenge/"
 
 var acmeChallengeDir string
 
@@ -66,6 +57,10 @@ func handle(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, r.URL.String(), http.StatusMovedPermanently)
 }
 
+func listenTCP(portNumber string) {
+	log.Fatal(http.ListenAndServe(":"+portNumber, nil))
+}
+
 func main() {
 	acmeChallengeDir = os.Getenv("ACME_CHALLENGE_DIR")
 	if acmeChallengeDir != "" {
@@ -77,22 +72,30 @@ func main() {
 
 	http.HandleFunc("/", handle)
 
+	// If PORT is specified, take that as authoritative
 	port := os.Getenv("PORT")
 	if port == "systemd" {
 		log.Fatal(systemdServe())
 	}
 
-	if port == "" {
-		if systemdEnabled() {
-			if systemdCanServe() {
-				log.Fatal(systemdServe())
-			} else {
-				log.Fatal(noPortNumberOrSockets)
-			}
-		} else {
-			log.Fatal(noPortNumberHelperText)
+	if port != "" {
+		listenTCP(port)
+	}
+
+	// Try to listen using systemd socket activation
+	if systemdEnabled() {
+		switch systemdCountListeners() {
+		case 0:
+			listenTCP("80") // fallback
+
+		case 1:
+			log.Fatal(systemdServe())
+
+		default:
+			log.Fatal("systemd socket activation - pass zero or one sockets")
 		}
 	}
 
-	log.Fatal(http.ListenAndServe(":"+port, nil))
+	// Default to listening on port 80
+	listenTCP("80")
 }

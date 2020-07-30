@@ -23,6 +23,10 @@ func systemdEnabled() bool {
 	return true
 }
 
+func systemdCountListeners() int {
+	return len(saListeners)
+}
+
 func systemdCanServe() bool {
 	if saErr == nil && len(saListeners) > 0 {
 		return true

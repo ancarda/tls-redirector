@@ -58,13 +58,12 @@ Building without that tag will produce a binary that only has TCP/IP support.
 
 Behavior may be configured through the following environmental variables:
 
-* `PORT`. A valid TCP/IP port number. This is required unless you build the
-  binary with support for systemd socket activation. In which case, `PORT` not
-  being set is interpreted as "I want to use socket activation".
+* `PORT`. TCP/IP port number to listen on. If not specified, port 80 is used
+  OR systemd socket activation is detected and used.
 
   You can force tls-redirector to use socket activation with `PORT=systemd`.
 
-* `ACME_CHALLENGE_DIR` (optional) Path to a directory on disk to serve at the
+* `ACME_CHALLENGE_DIR` Path to a directory on disk to serve at the
   path `/.well-known/acme-challenge`. All files are served as `text/plain` and
   is intended to provide support for HTTP based ACME challenges if necessary.
 

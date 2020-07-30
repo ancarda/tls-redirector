@@ -10,6 +10,10 @@ func systemdEnabled() bool {
 	return false
 }
 
+func systemdCountListeners() int {
+	return 0
+}
+
 func systemdCanServe() bool {
 	return false
 }
