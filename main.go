@@ -20,6 +20,10 @@ func listenTCP(portNumber string) {
 }
 
 func main() {
+	if len(os.Args) > 1 {
+		handleCliArgs()
+	}
+
 	acmeChallengeDir = os.Getenv("ACME_CHALLENGE_DIR")
 	if acmeChallengeDir != "" {
 		if _, err := os.Stat(acmeChallengeDir); os.IsNotExist(err) {
