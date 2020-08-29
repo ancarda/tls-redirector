@@ -1,4 +1,4 @@
-FROM golang:1.14-alpine AS builder
+FROM golang:1.15-alpine AS builder
 WORKDIR /go/src/git.sr.ht/~ancarda/tls-redirector
 COPY *.go ./
 RUN go build .
