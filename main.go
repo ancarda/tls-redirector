@@ -11,8 +11,6 @@ const (
 	version                = "2.2"
 )
 
-var acmeChallengeDir string
-
 func listenTCP(portNumber string) {
 	log.Fatal(http.ListenAndServe(":"+portNumber, nil))
 }
@@ -22,13 +20,16 @@ func main() {
 		handleCliArgs()
 	}
 
-	acmeChallengeDir = os.Getenv("ACME_CHALLENGE_DIR")
+	acmeChallengeDir := os.Getenv("ACME_CHALLENGE_DIR")
 	if acmeChallengeDir != "" {
 		if _, err := os.Stat(acmeChallengeDir); os.IsNotExist(err) {
 			log.Fatalf("fatal: ACME HTTP challenge directory not found: %s",
 				acmeChallengeDir)
 		}
 	}
+
+	// Setup the server
+	http.Handle("/", NewApp(acmeChallengeDir))
 
 	// If PORT is specified, take that as authoritative
 	port := os.Getenv("PORT")
