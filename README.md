@@ -3,6 +3,7 @@
 [![License](https://img.shields.io/github/license/ancarda/tls-redirector.svg)](https://choosealicense.com/licenses/agpl-3.0/)
 [![Build Status](https://travis-ci.com/ancarda/tls-redirector.svg?branch=master)](https://travis-ci.com/github/ancarda/tls-redirector)
 [![Go Report Card](https://goreportcard.com/badge/github.com/ancarda/tls-redirector)](https://goreportcard.com/report/github.com/ancarda/tls-redirector)
+[![Docker](https://img.shields.io/docker/pulls/ancarda/tls-redirector)](https://hub.docker.com/r/ancarda/tls-redirector)
 
 tls-redirector is a tiny HTTP server written in Go that is designed to run on
 port 80 and redirect all incoming traffic to HTTPS. It does this by emitting a
