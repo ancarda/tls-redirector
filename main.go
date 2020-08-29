@@ -8,7 +8,7 @@ import (
 
 const (
 	acmeChallengeUrlPrefix = "/.well-known/acme-challenge/"
-	version                = "2.1"
+	version                = "2.2"
 )
 
 var acmeChallengeDir string
