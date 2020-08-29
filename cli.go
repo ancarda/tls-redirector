@@ -26,7 +26,7 @@ func handleCliArgs() {
 		fmt.Println("")
 		fmt.Println("Environmental Variables")
 		fmt.Println("    PORT               - TCP/IP port number to listen on.")
-		fmt.Println("    ACME_CHALLENGE_DIR - Directory to serve at", acmeChallengeUrlPrefix)
+		fmt.Println("    ACME_CHALLENGE_DIR - Directory to serve at", acmeChallengeURLPrefix)
 		fmt.Println("")
 		fmt.Println("For more help, please refer to the README. Available online:")
 		fmt.Println("    https://git.sr.ht/~ancarda/tls-redirector/tree/master/README.md")

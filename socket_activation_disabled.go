@@ -19,5 +19,5 @@ func systemdCanServe() bool {
 }
 
 func systemdServe() error {
-	return fmt.Errorf("socket activation was not enabled at compile time.")
+	return fmt.Errorf("socket activation was not enabled at compile time")
 }

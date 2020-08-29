@@ -17,7 +17,7 @@ import (
 
 const (
 	TextPlain = "text/plain"
-	TextHtml  = "text/html"
+	TextHTML  = "text/html"
 )
 
 func randomString() string {
@@ -32,7 +32,7 @@ func randomString() string {
 }
 
 func TestNewApp_UsesRealFileSystem(t *testing.T) {
-	app := NewApp("")
+	app := newApp("")
 
 	exists, err := afero.DirExists(app.fs, os.TempDir())
 	assert.True(t, exists)
@@ -42,14 +42,14 @@ func TestNewApp_UsesRealFileSystem(t *testing.T) {
 func TestNewApp_StoresEnvSettings(t *testing.T) {
 	someString := randomString()
 
-	app := NewApp(someString)
+	app := newApp(someString)
 	assert.Equal(t, someString, app.acmeChallengeDir)
 }
 
 func TestServer_ServeACME_404(t *testing.T) {
 	rr := httptest.NewRecorder()
-	r, _ := http.NewRequest(http.MethodGet, "http://nowhere.invalid"+acmeChallengeUrlPrefix+"z", nil)
-	App{afero.NewMemMapFs(), "/"}.ServeHTTP(rr, r)
+	r, _ := http.NewRequest(http.MethodGet, "http://nowhere.invalid/.well-known/acme-challenge/z", nil)
+	app{afero.NewMemMapFs(), "/"}.ServeHTTP(rr, r)
 	res := rr.Result()
 
 	assert.Equal(t, http.StatusNotFound, res.StatusCode)
@@ -67,8 +67,8 @@ func TestServer_ServeACME_HappyPath(t *testing.T) {
 	f.Write([]byte("12345678"))
 
 	rr := httptest.NewRecorder()
-	r, _ := http.NewRequest(http.MethodGet, "http://nowhere.invalid"+acmeChallengeUrlPrefix+"ok", nil)
-	App{fs, "/"}.ServeHTTP(rr, r)
+	r, _ := http.NewRequest(http.MethodGet, "http://nowhere.invalid/.well-known/acme-challenge/ok", nil)
+	app{fs, "/"}.ServeHTTP(rr, r)
 	res := rr.Result()
 
 	assert.Equal(t, http.StatusOK, res.StatusCode)
@@ -82,7 +82,7 @@ func TestServer_ServeACME_HappyPath(t *testing.T) {
 func TestServer_NoHostHeader_WillError(t *testing.T) {
 	rr := httptest.NewRecorder()
 	r, _ := http.NewRequest(http.MethodGet, "", nil)
-	App{}.ServeHTTP(rr, r)
+	app{}.ServeHTTP(rr, r)
 	res := rr.Result()
 
 	assert.Equal(t, http.StatusBadRequest, res.StatusCode)
@@ -96,7 +96,7 @@ func TestServer_NoHostHeader_WillError(t *testing.T) {
 func TestServer_IPAddressHostHeader_IsRejected(t *testing.T) {
 	rr := httptest.NewRecorder()
 	r, _ := http.NewRequest(http.MethodGet, "http://127.0.0.1/", nil)
-	App{}.ServeHTTP(rr, r)
+	app{}.ServeHTTP(rr, r)
 	res := rr.Result()
 
 	assert.Equal(t, http.StatusBadRequest, res.StatusCode)
@@ -110,11 +110,11 @@ func TestServer_IPAddressHostHeader_IsRejected(t *testing.T) {
 func TestServer_HappyPath(t *testing.T) {
 	rr := httptest.NewRecorder()
 	r, _ := http.NewRequest(http.MethodGet, "http://nowhere.invalid/", nil)
-	App{}.ServeHTTP(rr, r)
+	app{}.ServeHTTP(rr, r)
 	res := rr.Result()
 
 	assert.Equal(t, http.StatusMovedPermanently, res.StatusCode)
-	assert.Equal(t, TextHtml, res.Header.Get("Content-Type"))
+	assert.Equal(t, TextHTML, res.Header.Get("Content-Type"))
 	assert.Equal(t, "nosniff", res.Header.Get("X-Content-Type-Options"))
 	assert.Equal(t, "https://nowhere.invalid/", res.Header.Get("Location"))
 }

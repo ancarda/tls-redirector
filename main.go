@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	acmeChallengeUrlPrefix = "/.well-known/acme-challenge/"
+	acmeChallengeURLPrefix = "/.well-known/acme-challenge/"
 	version                = "2.2"
 )
 
@@ -29,7 +29,7 @@ func main() {
 	}
 
 	// Setup the server
-	http.Handle("/", NewApp(acmeChallengeDir))
+	http.Handle("/", newApp(acmeChallengeDir))
 
 	// If PORT is specified, take that as authoritative
 	port := os.Getenv("PORT")

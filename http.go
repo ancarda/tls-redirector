@@ -9,16 +9,16 @@ import (
 	"github.com/spf13/afero"
 )
 
-type App struct {
+type app struct {
 	fs               afero.Fs
 	acmeChallengeDir string
 }
 
-func NewApp(acd string) App {
-	return App{afero.NewOsFs(), acd}
+func newApp(acd string) app {
+	return app{afero.NewOsFs(), acd}
 }
 
-func (app App) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (a app) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Server", "tls-redirector/"+version)
 	w.Header().Set("Content-Type", "text/plain")
 	w.Header().Set("X-Content-Type-Options", "nosniff")
@@ -42,11 +42,11 @@ func (app App) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// If we are serving the ACME HTTP challenges, handle that here.
-	if app.acmeChallengeDir != "" {
-		if strings.HasPrefix(r.URL.Path, acmeChallengeUrlPrefix) {
-			id := strings.TrimPrefix(r.URL.Path, acmeChallengeUrlPrefix)
-			b, err := readFile(app.fs,
-				app.acmeChallengeDir+string(os.PathSeparator)+id)
+	if a.acmeChallengeDir != "" {
+		if strings.HasPrefix(r.URL.Path, acmeChallengeURLPrefix) {
+			id := strings.TrimPrefix(r.URL.Path, acmeChallengeURLPrefix)
+			b, err := readFile(a.fs,
+				a.acmeChallengeDir+string(os.PathSeparator)+id)
 			if err != nil {
 				w.WriteHeader(http.StatusNotFound)
 				w.Write([]byte("File Not Found\n"))
