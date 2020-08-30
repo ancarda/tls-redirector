@@ -31,6 +31,11 @@ func randomString() string {
 	return v.String()
 }
 
+func assertionsCommonToAllResponses(t *testing.T, res *http.Response) {
+	assert.Equal(t, "nosniff", res.Header.Get("X-Content-Type-Options"))
+	assert.Equal(t, "tls-redirector/2.2", res.Header.Get("Server"))
+}
+
 func TestNewApp_UsesRealFileSystem(t *testing.T) {
 	app := newApp("")
 
@@ -54,7 +59,7 @@ func TestServer_ServeACME_404(t *testing.T) {
 
 	assert.Equal(t, http.StatusNotFound, res.StatusCode)
 	assert.Equal(t, TextPlain, res.Header.Get("Content-Type"))
-	assert.Equal(t, "nosniff", res.Header.Get("X-Content-Type-Options"))
+	assertionsCommonToAllResponses(t, res)
 
 	body, _ := ioutil.ReadAll(res.Body)
 	assert.Equal(t, "File Not Found\n", string(body))
@@ -73,7 +78,7 @@ func TestServer_ServeACME_HappyPath(t *testing.T) {
 
 	assert.Equal(t, http.StatusOK, res.StatusCode)
 	assert.Equal(t, TextPlain, res.Header.Get("Content-Type"))
-	assert.Equal(t, "nosniff", res.Header.Get("X-Content-Type-Options"))
+	assertionsCommonToAllResponses(t, res)
 
 	body, _ := ioutil.ReadAll(res.Body)
 	assert.Equal(t, "12345678", string(body))
@@ -87,7 +92,7 @@ func TestServer_NoHostHeader_WillError(t *testing.T) {
 
 	assert.Equal(t, http.StatusBadRequest, res.StatusCode)
 	assert.Equal(t, TextPlain, res.Header.Get("Content-Type"))
-	assert.Equal(t, "nosniff", res.Header.Get("X-Content-Type-Options"))
+	assertionsCommonToAllResponses(t, res)
 
 	body, _ := ioutil.ReadAll(res.Body)
 	assert.Contains(t, string(body), "no `host` header was sent")
@@ -101,7 +106,7 @@ func TestServer_IPAddressHostHeader_IsRejected(t *testing.T) {
 
 	assert.Equal(t, http.StatusBadRequest, res.StatusCode)
 	assert.Equal(t, TextPlain, res.Header.Get("Content-Type"))
-	assert.Equal(t, "nosniff", res.Header.Get("X-Content-Type-Options"))
+	assertionsCommonToAllResponses(t, res)
 
 	body, _ := ioutil.ReadAll(res.Body)
 	assert.Contains(t, string(body), "cannot redirect IP addresses")
@@ -115,6 +120,6 @@ func TestServer_HappyPath(t *testing.T) {
 
 	assert.Equal(t, http.StatusMovedPermanently, res.StatusCode)
 	assert.Equal(t, TextHTML, res.Header.Get("Content-Type"))
-	assert.Equal(t, "nosniff", res.Header.Get("X-Content-Type-Options"))
+	assertionsCommonToAllResponses(t, res)
 	assert.Equal(t, "https://nowhere.invalid/", res.Header.Get("Location"))
 }
