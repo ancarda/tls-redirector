@@ -11,6 +11,7 @@ import (
 const (
 	acmeChallengeURLPrefix = "/.well-known/acme-challenge/"
 	version                = "2.2"
+	defaultPort            = "80"
 )
 
 func listenTCP(portNumber string) {
@@ -47,7 +48,7 @@ func main() {
 	if socketactivation.Enabled {
 		switch socketactivation.CountListeners() {
 		case 0:
-			listenTCP("80") // fallback
+			listenTCP(defaultPort) // fallback
 
 		case 1:
 			log.Fatal(socketactivation.Serve())
@@ -58,5 +59,5 @@ func main() {
 	}
 
 	// Default to listening on port 80
-	listenTCP("80")
+	listenTCP(defaultPort)
 }
