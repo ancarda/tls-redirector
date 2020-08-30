@@ -3,17 +3,13 @@
 package socketactivation
 
 import (
-	"fmt"
 	"net"
 	"net/http"
 
 	"github.com/coreos/go-systemd/activation"
 )
 
-const (
-	enabled              bool = true
-	maximumListenerCount int  = 1
-)
+const enabled = true
 
 var (
 	listeners []net.Listener = nil
@@ -31,11 +27,6 @@ func countListeners() int {
 func serve() error {
 	if initerr != nil {
 		return initerr
-	}
-
-	if len(listeners) != maximumListenerCount {
-		return fmt.Errorf("expected exactly %d listener, have %d",
-			maximumListenerCount, len(listeners))
 	}
 
 	return http.Serve(listeners[0], nil)

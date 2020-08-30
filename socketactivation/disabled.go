@@ -2,7 +2,7 @@
 
 package socketactivation
 
-const enabled bool = false
+const enabled = false
 
 func countListeners() int {
 	return 0
