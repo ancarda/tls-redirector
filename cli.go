@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"os"
+
+	"git.sr.ht/~ancarda/tls-redirector/socketactivation"
 )
 
 func handleCliArgs() {
@@ -14,7 +16,7 @@ func handleCliArgs() {
 		fmt.Println("Usage:", os.Args[0], "[OPTION]")
 		fmt.Println("A tiny service for port 80 that rewrites URLs to HTTPS.")
 		fmt.Println("")
-		if systemdEnabled() {
+		if socketactivation.Enabled {
 			fmt.Println("Compiled with support for systemd socket activation.")
 		} else {
 			fmt.Println("Compiled without support for systemd socket activation.")

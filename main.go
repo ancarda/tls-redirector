@@ -4,6 +4,8 @@ import (
 	"log"
 	"net/http"
 	"os"
+
+	"git.sr.ht/~ancarda/tls-redirector/socketactivation"
 )
 
 const (
@@ -34,7 +36,7 @@ func main() {
 	// If PORT is specified, take that as authoritative
 	port := os.Getenv("PORT")
 	if port == "systemd" {
-		log.Fatal(systemdServe())
+		log.Fatal(socketactivation.Serve())
 	}
 
 	if port != "" {
@@ -42,13 +44,13 @@ func main() {
 	}
 
 	// Try to listen using systemd socket activation
-	if systemdEnabled() {
-		switch systemdCountListeners() {
+	if socketactivation.Enabled {
+		switch socketactivation.CountListeners() {
 		case 0:
 			listenTCP("80") // fallback
 
 		case 1:
-			log.Fatal(systemdServe())
+			log.Fatal(socketactivation.Serve())
 
 		default:
 			log.Fatal("systemd socket activation - pass zero or one sockets")
