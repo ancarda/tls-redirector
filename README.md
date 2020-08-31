@@ -1,6 +1,6 @@
 # TLS Redirector
 
-[![License](https://img.shields.io/github/license/ancarda/tls-redirector.svg)](https://choosealicense.com/licenses/agpl-3.0/)
+[![License](https://img.shields.io/badge/License-AGPL--3.0--or--later-teal)](https://choosealicense.com/licenses/agpl-3.0/)
 [![builds.sr.ht status](https://builds.sr.ht/~ancarda/tls-redirector.svg)](https://builds.sr.ht/~ancarda/tls-redirector)
 [![Go Report Card](https://goreportcard.com/badge/github.com/ancarda/tls-redirector)](https://goreportcard.com/report/github.com/ancarda/tls-redirector)
 [![Docker](https://img.shields.io/docker/pulls/ancarda/tls-redirector)](https://hub.docker.com/r/ancarda/tls-redirector)
