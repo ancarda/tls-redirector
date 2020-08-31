@@ -33,7 +33,7 @@ func randomString() string {
 
 func assertionsCommonToAllResponses(t *testing.T, res *http.Response) {
 	assert.Equal(t, "nosniff", res.Header.Get("X-Content-Type-Options"))
-	assert.Equal(t, "tls-redirector/2.2", res.Header.Get("Server"))
+	assert.Equal(t, "tls-redirector/2.3", res.Header.Get("Server"))
 }
 
 func TestNewApp_UsesRealFileSystem(t *testing.T) {

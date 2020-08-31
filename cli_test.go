@@ -13,7 +13,7 @@ func TestCLIVersionFlag(t *testing.T) {
 	args := []string{"./test", "--version"}
 
 	assert.Equal(t, 0, handleCliArgs(&buf, args, false))
-	assert.Equal(t, "tls redirector 2.2\n", buf.String())
+	assert.Equal(t, "tls redirector 2.3\n", buf.String())
 }
 
 func TestCLIUnknownFlag(t *testing.T) {
