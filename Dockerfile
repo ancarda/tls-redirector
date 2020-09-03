@@ -1,7 +1,7 @@
 FROM golang:1.15.1-alpine3.12 AS builder
 WORKDIR /go/src/git.sr.ht/~ancarda/tls-redirector
-COPY . ./
 RUN apk add git binutils
+COPY . ./
 RUN go build .
 RUN strip tls-redirector
 
