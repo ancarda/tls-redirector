@@ -6,8 +6,8 @@ import (
 )
 
 const (
-	ExitSuccess = 0
-	ExitFailure = 1
+	exitSuccess = 0
+	exitFailure = 1
 )
 
 func handleCliArgs(w io.Writer, args []string, hasSocketActivation bool) int {
@@ -38,8 +38,8 @@ func handleCliArgs(w io.Writer, args []string, hasSocketActivation bool) int {
 
 	default:
 		fmt.Fprintln(w, "unrecognized:", args[1])
-		return ExitFailure
+		return exitFailure
 	}
 
-	return ExitSuccess
+	return exitSuccess
 }
