@@ -5,7 +5,7 @@ Thanks for your interest in contributing to tls-redirector!
 This guide assumes you are somewhat familiar with Git and have contributed to
 open source software beforehand.
 
-If you are struggling with anything -- Git, Go, Docker, or anything else --
+If you are struggling with anything -- Git, Go, C, Docker, or anything else --
 please don't hesitate to send an email to the mailing list (public) or the
 maintainer (private).
 
@@ -36,8 +36,11 @@ You don't need to subscribe to the mailing list to participate.
 ### Via GitHub
 
 If you are not able or willing to use `git send-email`, you can you can send
-patches via GitHub's Pull Request feature. The mirror can be forked and is
+patches via GitHub's "Pull Request" feature. The mirror can be forked and is
 monitored by the maintainer.
+
+You will need a GitHub account and may need to run non-free JavaScript to send
+patches this way.
 
 ## Discussions
 
@@ -46,7 +49,7 @@ GitHub mirror cannot be used for issue tracking.
 
 Please do not directly submit to the issue tracker.
 
-Discussions that affect _all_ ancarda projects can be sent to my Public Inbox.
+Discussions that affect _all_ ancarda projects can be sent to the Public Inbox.
 
 And of course, any discussion that is better off-the-record - such as security
 reports - can be sent directly to the maintainer. Feel free to use PGP.
