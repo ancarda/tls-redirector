@@ -1,10 +1,14 @@
 package main
 
 import (
+	"fmt"
+	"html"
 	"io/ioutil"
 	"net/http"
 	"os"
 	"strings"
+
+	"git.sr.ht/~ancarda/tls-redirector/fancy"
 
 	"github.com/spf13/afero"
 )
@@ -20,13 +24,18 @@ func newApp(acd string) app {
 
 func (a app) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Server", "tls-redirector/"+version)
-	w.Header().Set("Content-Type", "text/plain")
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.Header().Set("X-Content-Type-Options", "nosniff")
 
 	// If we haven't been given a host, just abort.
 	if r.Host == "" {
 		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("tls-redirector cannot handle this request because no `host` header was sent by your browser.\n"))
+		w.Write(fancy.ErrorPage(
+			"Bad Request",
+			fancy.GenericMessage,
+			fancy.EmptyHostHeader,
+			version,
+		))
 		return
 	}
 
@@ -37,22 +46,38 @@ func (a app) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// real web server some effort by dropping it now.
 	if isIPAddress(r.Host) {
 		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("tls-redirector cannot redirect IP addresses.\n"))
+		w.Write(fancy.ErrorPage(
+			"400 Bad Request",
+			fancy.GenericMessage,
+			fmt.Sprintf(
+				fancy.HostHeaderIsIPTechInfo,
+				html.EscapeString(r.Host),
+			),
+			version,
+		))
 		return
 	}
 
 	// If we are serving the ACME HTTP challenges, handle that here.
 	if a.acmeChallengeDir != "" {
 		if strings.HasPrefix(r.URL.Path, acmeChallengeURLPrefix) {
-			id := strings.TrimPrefix(r.URL.Path, acmeChallengeURLPrefix)
+			id := strings.TrimPrefix(r.URL.Path,
+				acmeChallengeURLPrefix)
 			b, err := readFile(a.fs,
 				a.acmeChallengeDir+string(os.PathSeparator)+id)
 			if err != nil {
 				w.WriteHeader(http.StatusNotFound)
-				w.Write([]byte("File Not Found\n"))
+				w.Write(fancy.ErrorPage(
+					"404 File Not Found",
+					fancy.Acme404Message,
+					fmt.Sprintf(fancy.Acme404TI,
+						html.EscapeString(r.URL.Path)),
+					version,
+				))
 				return
 			}
 
+			w.Header().Set("Content-Type", "text/plain")
 			w.Write(b)
 			return
 		}
@@ -62,7 +87,6 @@ func (a app) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// Change host as well as in r.URL, it's empty.
 	r.URL.Host = r.Host
 	r.URL.Scheme = "https"
-	w.Header().Set("Content-Type", "text/html")
 	http.Redirect(w, r, r.URL.String(), http.StatusMovedPermanently)
 }
 

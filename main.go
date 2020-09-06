@@ -10,7 +10,7 @@ import (
 
 const (
 	acmeChallengeURLPrefix = "/.well-known/acme-challenge/"
-	version                = "2.3"
+	version                = "2.4"
 	defaultPort            = "80"
 )
 

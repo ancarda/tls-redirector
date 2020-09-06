@@ -17,7 +17,7 @@ import (
 
 const (
 	TextPlain = "text/plain"
-	TextHTML  = "text/html"
+	TextHTML  = "text/html; charset=utf-8"
 )
 
 func randomString() string {
@@ -33,7 +33,7 @@ func randomString() string {
 
 func assertionsCommonToAllResponses(t *testing.T, res *http.Response) {
 	assert.Equal(t, "nosniff", res.Header.Get("X-Content-Type-Options"))
-	assert.Equal(t, "tls-redirector/2.3", res.Header.Get("Server"))
+	assert.Equal(t, "tls-redirector/2.4", res.Header.Get("Server"))
 }
 
 func TestNewApp_UsesRealFileSystem(t *testing.T) {
@@ -58,12 +58,11 @@ func TestServer_ServeACME_404(t *testing.T) {
 	res := rr.Result()
 
 	assert.Equal(t, http.StatusNotFound, res.StatusCode)
-	assert.Equal(t, TextPlain, res.Header.Get("Content-Type"))
+	assert.Equal(t, TextHTML, res.Header.Get("Content-Type"))
 	assertionsCommonToAllResponses(t, res)
 
 	body, _ := ioutil.ReadAll(res.Body)
-	assert.Equal(t, "File Not Found\n", string(body))
-
+	assert.Contains(t, string(body), "File Not Found")
 }
 
 func TestServer_ServeACME_HappyPath(t *testing.T) {
@@ -91,11 +90,11 @@ func TestServer_NoHostHeader_WillError(t *testing.T) {
 	res := rr.Result()
 
 	assert.Equal(t, http.StatusBadRequest, res.StatusCode)
-	assert.Equal(t, TextPlain, res.Header.Get("Content-Type"))
+	assert.Equal(t, TextHTML, res.Header.Get("Content-Type"))
 	assertionsCommonToAllResponses(t, res)
 
 	body, _ := ioutil.ReadAll(res.Body)
-	assert.Contains(t, string(body), "no `host` header was sent")
+	assert.Contains(t, string(body), "header is empty or wasn't sent")
 }
 
 func TestServer_IPAddressHostHeader_IsRejected(t *testing.T) {
@@ -105,11 +104,11 @@ func TestServer_IPAddressHostHeader_IsRejected(t *testing.T) {
 	res := rr.Result()
 
 	assert.Equal(t, http.StatusBadRequest, res.StatusCode)
-	assert.Equal(t, TextPlain, res.Header.Get("Content-Type"))
+	assert.Equal(t, TextHTML, res.Header.Get("Content-Type"))
 	assertionsCommonToAllResponses(t, res)
 
 	body, _ := ioutil.ReadAll(res.Body)
-	assert.Contains(t, string(body), "cannot redirect IP addresses")
+	assert.Contains(t, string(body), "looks like an IP address")
 }
 
 func TestServer_HappyPath(t *testing.T) {
