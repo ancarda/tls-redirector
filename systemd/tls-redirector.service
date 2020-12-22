@@ -1,10 +1,16 @@
 [Unit]
-Description=TLS Redirector (http to https)
-After=tls-redirector.socket
+Description=TLS Redirector
 
 [Service]
-#Environment=ACME_CHALLENGE_DIR=/tmp
-Type=simple
 ExecStart=/usr/bin/tls-redirector
-Restart=on-failure
-User=nobody
+Environment=ACME_CHALLENGE_DIR=%C/acme-challenge/.well-known/acme-challenge
+
+# Security
+DynamicUser=yes
+ProtectHome=tmpfs
+PrivateDevices=yes
+ProtectHostname=yes
+
+## No need to be able to bind to sockets
+CapabilityBoundingSet=
+RestrictNamespaces=

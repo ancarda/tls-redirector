@@ -1,5 +1,5 @@
 [Unit]
-Description=TLS Redirector Port 80 (socket)
+Description=TLS Redirector Socket
 After=network.target
 
 [Socket]
