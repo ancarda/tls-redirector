@@ -40,5 +40,5 @@ func main() {
 
 	buf.WriteString(")\n")
 
-	ioutil.WriteFile("templates.go", buf.Bytes(), 0755)
+	ioutil.WriteFile("templates.go", buf.Bytes(), 0o755)
 }
