@@ -1,8 +1,6 @@
 FROM golang:1.16.0-alpine3.13 AS builder
 WORKDIR /go/src/git.sr.ht/~ancarda/tls-redirector
 RUN apk add git binutils
-COPY go.* ./
-RUN go mod download
 COPY . ./
 RUN go build . && strip tls-redirector
 
