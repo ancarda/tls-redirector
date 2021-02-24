@@ -1,7 +1,7 @@
 package main
 
 import (
-	"io/ioutil"
+	"io"
 	"math/rand"
 	"net/http"
 	"net/http/httptest"
@@ -45,7 +45,7 @@ func TestServer_ServeACME_404(t *testing.T) {
 	assert.Equal(t, TextHTML, res.Header.Get("Content-Type"))
 	assertionsCommonToAllResponses(t, res)
 
-	body, _ := ioutil.ReadAll(res.Body)
+	body, _ := io.ReadAll(res.Body)
 	assert.Contains(t, string(body), "File Not Found")
 }
 
@@ -63,7 +63,7 @@ func TestServer_ServeACME_HappyPath(t *testing.T) {
 	assert.Equal(t, TextPlain, res.Header.Get("Content-Type"))
 	assertionsCommonToAllResponses(t, res)
 
-	body, _ := ioutil.ReadAll(res.Body)
+	body, _ := io.ReadAll(res.Body)
 	assert.Equal(t, "12345678", string(body))
 }
 
@@ -77,7 +77,7 @@ func TestServer_NoHostHeader_WillError(t *testing.T) {
 	assert.Equal(t, TextHTML, res.Header.Get("Content-Type"))
 	assertionsCommonToAllResponses(t, res)
 
-	body, _ := ioutil.ReadAll(res.Body)
+	body, _ := io.ReadAll(res.Body)
 	assert.Contains(t, string(body), "header is empty or wasn't sent")
 }
 
@@ -91,7 +91,7 @@ func TestServer_IPAddressHostHeader_IsRejected(t *testing.T) {
 	assert.Equal(t, TextHTML, res.Header.Get("Content-Type"))
 	assertionsCommonToAllResponses(t, res)
 
-	body, _ := ioutil.ReadAll(res.Body)
+	body, _ := io.ReadAll(res.Body)
 	assert.Contains(t, string(body), "looks like an IP address")
 }
 
