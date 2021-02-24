@@ -8,8 +8,6 @@ import (
 	"os"
 	"strings"
 
-	"git.sr.ht/~ancarda/tls-redirector/fancy"
-
 	"github.com/spf13/afero"
 )
 
@@ -30,10 +28,10 @@ func (a app) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// If we haven't been given a host, just abort.
 	if r.Host == "" {
 		w.WriteHeader(http.StatusBadRequest)
-		w.Write(fancy.ErrorPage(
+		w.Write(errorPage(
 			"Bad Request",
-			fancy.GenericMessage,
-			fancy.EmptyHostHeader,
+			genericMessage,
+			emptyHostHeader,
 			version,
 		))
 		return
@@ -46,11 +44,11 @@ func (a app) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// real web server some effort by dropping it now.
 	if isIPAddress(r.Host) {
 		w.WriteHeader(http.StatusBadRequest)
-		w.Write(fancy.ErrorPage(
+		w.Write(errorPage(
 			"400 Bad Request",
-			fancy.GenericMessage,
+			genericMessage,
 			fmt.Sprintf(
-				fancy.HostHeaderIsIPTechInfo,
+				hostHeaderIsIPTechInfo,
 				html.EscapeString(r.Host),
 			),
 			version,
@@ -67,10 +65,10 @@ func (a app) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				a.acmeChallengeDir+string(os.PathSeparator)+id)
 			if err != nil {
 				w.WriteHeader(http.StatusNotFound)
-				w.Write(fancy.ErrorPage(
+				w.Write(errorPage(
 					"404 File Not Found",
-					fancy.Acme404Message,
-					fmt.Sprintf(fancy.Acme404TI,
+					acme404Message,
+					fmt.Sprintf(acme404TI,
 						html.EscapeString(r.URL.Path)),
 					version,
 				))

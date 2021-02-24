@@ -1,25 +1,10 @@
-package fancy
+package main
 
 import (
-	"math/rand"
-	"reflect"
 	"testing"
-	"testing/quick"
-	"time"
 
 	"github.com/stretchr/testify/assert"
 )
-
-func randomString() string {
-	v, ok := quick.Value(reflect.TypeOf(""),
-		rand.New(rand.NewSource(time.Now().Unix())))
-
-	if !ok {
-		panic("wasn't able to generate a string")
-	}
-
-	return v.String()
-}
 
 func TestErrorPage(t *testing.T) {
 	title := randomString()
@@ -27,7 +12,7 @@ func TestErrorPage(t *testing.T) {
 	techInfo := randomString()
 	version := randomString()
 
-	page := string(ErrorPage(title, message, techInfo, version))
+	page := string(errorPage(title, message, techInfo, version))
 
 	assert.Contains(t, page, "<title>"+title+"</title>")
 	assert.Contains(t, page, "<h1>"+title+"</h1>")

@@ -38,14 +38,6 @@ up once and forget about it.
 
 ## How To Build
 
-The first time you checkout this project, you'll need to run this command:
-
-    go generate ./...
-
-Re-run that anytime you edit files inside `fancy/html`.
-
-----
-
 If you want systemd socket activation, you need to compile this way:
 
     go build -tags systemd

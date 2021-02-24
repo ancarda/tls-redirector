@@ -9,7 +9,7 @@ packages:
 
 environment:
   CGO_ENABLED: 0
-  GO_VERSION: 1.15
+  GO_VERSION: 1.16
   PATH: /usr/local/go/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
 tasks:
@@ -21,5 +21,4 @@ tasks:
 
   - test: |
       cd tls-redirector
-      go generate ./...
       go test -v -cover ./...
