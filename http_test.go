@@ -5,13 +5,12 @@ import (
 	"math/rand"
 	"net/http"
 	"net/http/httptest"
-	"os"
 	"reflect"
 	"testing"
+	"testing/fstest"
 	"testing/quick"
 	"time"
 
-	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -36,25 +35,10 @@ func assertionsCommonToAllResponses(t *testing.T, res *http.Response) {
 	assert.Equal(t, "tls-redirector/2.4", res.Header.Get("Server"))
 }
 
-func TestNewApp_UsesRealFileSystem(t *testing.T) {
-	app := newApp("")
-
-	exists, err := afero.DirExists(app.fs, os.TempDir())
-	assert.True(t, exists)
-	assert.Nil(t, err)
-}
-
-func TestNewApp_StoresEnvSettings(t *testing.T) {
-	someString := randomString()
-
-	app := newApp(someString)
-	assert.Equal(t, someString, app.acmeChallengeDir)
-}
-
 func TestServer_ServeACME_404(t *testing.T) {
 	rr := httptest.NewRecorder()
 	r, _ := http.NewRequest(http.MethodGet, "http://nowhere.invalid/.well-known/acme-challenge/z", nil)
-	app{afero.NewMemMapFs(), "/"}.ServeHTTP(rr, r)
+	app{fstest.MapFS{}, true}.ServeHTTP(rr, r)
 	res := rr.Result()
 
 	assert.Equal(t, http.StatusNotFound, res.StatusCode)
@@ -66,13 +50,13 @@ func TestServer_ServeACME_404(t *testing.T) {
 }
 
 func TestServer_ServeACME_HappyPath(t *testing.T) {
-	fs := afero.NewMemMapFs()
-	f, _ := fs.Create("/ok")
-	f.Write([]byte("12345678"))
+	mapFS := fstest.MapFS{
+		"ok": &fstest.MapFile{Data: []byte("12345678")},
+	}
 
 	rr := httptest.NewRecorder()
 	r, _ := http.NewRequest(http.MethodGet, "http://nowhere.invalid/.well-known/acme-challenge/ok", nil)
-	app{fs, "/"}.ServeHTTP(rr, r)
+	app{mapFS, true}.ServeHTTP(rr, r)
 	res := rr.Result()
 
 	assert.Equal(t, http.StatusOK, res.StatusCode)

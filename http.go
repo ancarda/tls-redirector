@@ -3,21 +3,19 @@ package main
 import (
 	"fmt"
 	"html"
-	"io/ioutil"
+	"io/fs"
 	"net/http"
 	"os"
 	"strings"
-
-	"github.com/spf13/afero"
 )
 
 type app struct {
-	fs               afero.Fs
-	acmeChallengeDir string
+	fsys                fs.FS
+	serveAcmeChallenges bool
 }
 
-func newApp(acd string) app {
-	return app{afero.NewOsFs(), acd}
+func newApp(acmeChallengeDir string) app {
+	return app{os.DirFS(acmeChallengeDir), acmeChallengeDir != ""}
 }
 
 func (a app) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -57,12 +55,10 @@ func (a app) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// If we are serving the ACME HTTP challenges, handle that here.
-	if a.acmeChallengeDir != "" {
+	if a.serveAcmeChallenges {
 		if strings.HasPrefix(r.URL.Path, acmeChallengeURLPrefix) {
-			id := strings.TrimPrefix(r.URL.Path,
-				acmeChallengeURLPrefix)
-			b, err := readFile(a.fs,
-				a.acmeChallengeDir+string(os.PathSeparator)+id)
+			id := strings.TrimPrefix(r.URL.Path, acmeChallengeURLPrefix)
+			b, err := fs.ReadFile(a.fsys, id)
 			if err != nil {
 				w.WriteHeader(http.StatusNotFound)
 				w.Write(errorPage(
@@ -86,14 +82,4 @@ func (a app) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	r.URL.Host = r.Host
 	r.URL.Scheme = "https"
 	http.Redirect(w, r, r.URL.String(), http.StatusMovedPermanently)
-}
-
-func readFile(fs afero.Fs, filename string) ([]byte, error) {
-	f, err := fs.Open(filename)
-	if err != nil {
-		return nil, err
-	}
-	defer f.Close()
-
-	return ioutil.ReadAll(f)
 }
