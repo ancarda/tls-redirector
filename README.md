@@ -36,6 +36,11 @@ up once and forget about it.
 * IP address traffic (usually by crawlers) is dropped.
 * Can serve your `.well-known/acme-challenge` directory.
 
+## Quick Run
+
+    docker run -d --user nobody --restart=unless-stopped --env PORT=1234 \
+        -p 80:1234 --name tls-redirector ancarda/tls-redirector
+
 ## How To Build
 
 If you want systemd socket activation, you need to compile this way:
