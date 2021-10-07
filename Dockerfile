@@ -1,10 +1,10 @@
-FROM golang:1.16.0-alpine3.13 AS builder
+FROM golang:1.17.1-alpine3.14 AS builder
 WORKDIR /go/src/git.sr.ht/~ancarda/tls-redirector
-RUN apk add git binutils
+RUN apk add binutils
 COPY . ./
 RUN go build . && strip tls-redirector
 
-FROM alpine:3.12.3
+FROM alpine:3.14.2
 RUN apk add curl
 COPY --from=builder /go/src/git.sr.ht/~ancarda/tls-redirector/tls-redirector .
 EXPOSE 80
